@@ -1,3 +1,4 @@
+
 # xv6-RISC-V: Advanced CPU Scheduling and Process Management
 
 An extended implementation of the **xv6-RISC-V operating system** for the CSE231 Operating Systems Programming Assignment.
@@ -9,7 +10,7 @@ This project enhances the standard xv6 kernel with CPU scheduling statistics, co
 ### 1. CPU Scheduling Statistics
 - Track the number of times each process is scheduled.
 - Track CPU ticks consumed by each process.
-- Record the last CPU (hart) on which a process executed.
+- Record the last CPU (hart) on which each process executed.
 - Retrieve scheduling information using `schedinfo()`.
 - Identify the current CPU using `getcpu()`.
 
@@ -33,6 +34,7 @@ This project enhances the standard xv6 kernel with CPU scheduling statistics, co
 - The scheduler respects process affinity while selecting runnable processes.
 
 ### 5. Priority-Based Scheduling
+
 Two scheduling policies are supported:
 
 | Policy | Description |
@@ -132,7 +134,7 @@ OS_ASS_4/
 - Make
 - Git
 
-The project was developed and tested using WSL Ubuntu with:
+Developed and tested using:
 - RISC-V GCC 13.2.0
 - QEMU 8.2.2
 - Three CPU harts
