@@ -1,0 +1,212 @@
+
+# xv6-RISC-V: Advanced CPU Scheduling and Process Management
+
+An extended implementation of the **xv6-RISC-V operating system** for the CSE231 Operating Systems Programming Assignment.
+
+This project enhances the standard xv6 kernel with CPU scheduling statistics, configurable time slices, CPU affinity, priority-based scheduling, process monitoring, and fork execution tracking.
+
+## Features
+
+### 1. CPU Scheduling Statistics
+- Track the number of times each process is scheduled.
+- Track CPU ticks consumed by each process.
+- Record the last CPU (hart) on which each process executed.
+- Retrieve scheduling information using `schedinfo()`.
+- Identify the current CPU using `getcpu()`.
+
+### 2. Configurable Time Slices
+- Configure process time slices dynamically using `setslice()`.
+- Support time slices from 1 to 100 ticks.
+- New processes inherit their parent's time slice.
+- Processes yield the CPU when their allocated time slice expires.
+
+### 3. Fork Execution Tracking
+- Track the tick at which a process is forked.
+- Record the tick at which the child process first executes.
+- Record the CPU hart on which the child first runs.
+- Enable or disable tracking using `forkwatch()`.
+
+### 4. CPU Affinity
+- Assign processes to specific CPU harts using CPU affinity masks.
+- Retrieve the current affinity mask using `sched_getaffinity()`.
+- Set affinity using `sched_setaffinity()`.
+- Child processes inherit their parent's affinity.
+- The scheduler respects process affinity while selecting runnable processes.
+
+### 5. Priority-Based Scheduling
+
+Two scheduling policies are supported:
+
+| Policy | Description |
+|---|---|
+| Round Robin (RR) | Default scheduling policy |
+| Priority (PRIO) | Selects runnable processes according to priority |
+
+Three priority levels are supported:
+
+| Priority | Level |
+|---|---|
+| HIGH | 0 |
+| NORMAL | 1 |
+| LOW | 2 |
+
+Additional functionality:
+- Change scheduling policy using `schedpolicy()`.
+- Change process priority using `setprio()`.
+- Round-robin fairness among processes with equal priority.
+- Higher-priority runnable processes can preempt lower-priority processes.
+
+### 6. xtop — Process Monitoring Utility
+
+A user-space process monitoring utility inspired by Linux `top`.
+
+Features:
+- Displays running processes and their states.
+- Shows PID, process name, priority, CPU, affinity mask, and time slice.
+- Calculates approximate CPU usage using scheduling tick statistics.
+- Displays uptime, runnable process count, and active scheduling policy.
+- Shows approximate CPU utilization per hart.
+- Refreshes periodically with terminal-based output.
+
+Usage:
+
+```bash
+xtop
+xtop -d 2
+xtop -n 5
+xtop -d 2 -n 5
+```
+
+Options:
+- `-d N`: Refresh interval in ticks.
+- `-n F`: Number of frames to display. Without this option, monitoring continues until interrupted.
+
+## System Calls
+
+| System Call | Purpose |
+|---|---|
+| `getcpu()` | Returns the current CPU hart |
+| `schedinfo()` | Retrieves process scheduling statistics |
+| `setslice()` | Sets a process time slice |
+| `forkwatch()` | Enables or disables fork tracking |
+| `sched_setaffinity()` | Sets CPU affinity |
+| `sched_getaffinity()` | Retrieves CPU affinity |
+| `schedpolicy()` | Gets or changes the scheduling policy |
+| `setprio()` | Changes process priority |
+| `getpids()` | Retrieves process IDs for monitoring |
+
+## Project Structure
+
+```text
+OS_ASS_4/
+├── kernel/
+│   ├── proc.c
+│   ├── proc.h
+│   ├── trap.c
+│   ├── syscall.c
+│   ├── sysproc.c
+│   ├── syscall.h
+│   ├── schedinfo.h
+│   └── ...
+│
+├── user/
+│   ├── whereami.c
+│   ├── slicetest.c
+│   ├── forkrace.c
+│   ├── affinitytest.c
+│   ├── affinityfork.c
+│   ├── affinvalid.c
+│   ├── taskset.c
+│   ├── priotest.c
+│   ├── xtop.c
+│   └── ...
+│
+├── Makefile
+├── README.md
+└── 7_PA4.zip
+```
+
+## Requirements
+
+- Ubuntu / Linux environment
+- RISC-V GNU Compiler Toolchain
+- QEMU emulator
+- Make
+- Git
+
+Developed and tested using:
+- RISC-V GCC 13.2.0
+- QEMU 8.2.2
+- Three CPU harts
+
+## Build and Run
+
+Clone the repository:
+
+```bash
+git clone https://github.com/itssshemant/OS_ASS_4.git
+cd OS_ASS_4
+```
+
+Build the operating system:
+
+```bash
+make clean
+make
+```
+
+Run xv6 with QEMU:
+
+```bash
+make qemu
+```
+
+## Testing
+
+Run the included test programs from the xv6 shell:
+
+```bash
+whereami
+slicetest
+forkrace
+affinitytest
+affinityfork
+affinvalid
+priotest
+```
+
+Run the standard xv6 user test suite:
+
+```bash
+usertests -q
+```
+
+Test CPU affinity with a restricted CPU mask:
+
+```bash
+taskset 0x2 usertests -q
+```
+
+Run the process monitor:
+
+```bash
+xtop -n 5
+```
+
+## Implementation Notes
+
+- Kernel-level scheduling changes are implemented primarily in `kernel/proc.c`.
+- Timer interrupt handling and tick accounting are implemented in `kernel/trap.c`.
+- System call interfaces are connected through the kernel syscall dispatcher and user-space syscall stubs.
+- User-space testing utilities are located in the `user/` directory.
+- `xtop` uses process IDs and scheduling statistics to calculate approximate CPU usage over successive refresh intervals.
+
+## Repository
+
+**GitHub:** https://github.com/itssshemant/OS_ASS_4
+
+**Branch:** `main`
+
+---
+
+*Developed as part of the CSE231 Operating Systems Programming Assignment.*
